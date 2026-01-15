@@ -1,12 +1,9 @@
 #!/bin/bash
 
-echo "Compiling brute-force.cpp..."
-g++ -O2 -o brute-force brute-force.cpp
-if [ $? -ne 0 ]; then
-    echo "Compilation failed!"
+if [ ! -f ./brute-force ]; then
+    echo "Error: brute-force not found. Run 'make brute-force' first."
     exit 1
 fi
-echo "Compilation successful."
 
 find ./in -type f | while read -r input_file; do
     rel_path="${input_file#./in/}"
@@ -17,7 +14,7 @@ find ./in -type f | while read -r input_file; do
     filename_noext="${filename%.*}"
 
     mkdir -p "./ref/$dir_part"
-	
+
     output_file="./ref/$dir_part/${filename_noext}.ref"
 
     echo "Processing: $input_file -> $output_file"

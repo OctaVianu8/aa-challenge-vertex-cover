@@ -3,3 +3,5 @@ ref/
 out/
 brute-force
 test-gen-random
+calculate-accuracy
+greedy-highest-order
