@@ -43,7 +43,7 @@ int main() {
     while (!q.empty()) {
         int u = q.front();
         q.pop();
-
+   
         for (int i = 0; i < m; i++) {
             int eu = edges[i].first;
             int ev = edges[i].second;
