@@ -17,8 +17,5 @@ find ./in -type f | while read -r input_file; do
 
     output_file="./ref/$dir_part/${filename_noext}.ref"
 
-    echo "Processing: $input_file -> $output_file"
     ./brute-force < "$input_file" > "$output_file"
 done
-
-echo "Done! Reference outputs generated in ./ref/"

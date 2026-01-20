@@ -19,7 +19,4 @@ fi
 
 for ((i = 1; i <= N; i++)); do
     ./test-gen-random "$DENSITY" > "./in/${DENSITY}/${i}.in"
-    echo "Generated test $i"
 done
-
-echo "Done! Generated $N tests in ./in/${DENSITY}/ with density ${DENSITY}%"

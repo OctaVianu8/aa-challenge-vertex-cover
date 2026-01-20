@@ -25,7 +25,6 @@ find ./in -type f | while read -r input_file; do
 
     output_file="./out/$ALGORITHM/$dir_part/${filename_noext}.out"
 
-    echo "Processing: $input_file -> $output_file"
     ./$ALGORITHM < "$input_file" > "$output_file"
 done
 

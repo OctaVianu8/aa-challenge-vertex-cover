@@ -66,19 +66,6 @@ int main(int argc, char* argv[]) {
     int totalPredicted = 0;
     int totalReference = 0;
 
-    cout << "========================================\n";
-    cout << "  Vertex Cover Accuracy Calculator\n";
-    cout << "========================================\n\n";
-    cout << "Output dir: " << outDir << "\n";
-    cout << "Reference dir: " << refDir << "\n\n";
-
-    cout << left << setw(12) << "Test"
-         << right << setw(10) << "Predicted"
-         << setw(10) << "Reference"
-         << setw(12) << "Accuracy"
-         << setw(10) << "Diff" << "\n";
-    cout << string(54, '-') << "\n";
-
     for (const auto& entry : fs::recursive_directory_iterator(outDir)) {
         if (!entry.is_regular_file()) continue;
 
@@ -118,13 +105,6 @@ int main(int argc, char* argv[]) {
                 perfectMatches++;
             }
 
-            int diff = predicted - reference;
-            cout << left << setw(12) << baseName
-                 << right << setw(10) << predicted
-                 << setw(10) << reference
-                 << setw(11) << fixed << setprecision(2) << accuracy << "%"
-                 << setw(10) << (diff >= 0 ? "+" : "") << diff << "\n";
-
         } catch (const exception& e) {
             cerr << "Error processing " << baseName << ": " << e.what() << "\n";
         }
@@ -135,24 +115,14 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    cout << string(54, '-') << "\n\n";
-
     // Summary statistics
     double avgAccuracy = totalAccuracy / totalTests;
-    double overallRatio = (totalPredicted > 0) ?
-        (static_cast<double>(totalReference) / totalPredicted) * 100.0 : 0.0;
 
-    cout << "========================================\n";
-    cout << "             SUMMARY\n";
-    cout << "========================================\n";
-    cout << "Total tests:        " << totalTests << "\n";
-    cout << "Perfect matches:    " << perfectMatches << " ("
-         << fixed << setprecision(1) << (100.0 * perfectMatches / totalTests) << "%)\n";
-    cout << "Average accuracy:   " << fixed << setprecision(2) << avgAccuracy << "%\n";
-    cout << "Total predicted:    " << totalPredicted << "\n";
-    cout << "Total reference:    " << totalReference << "\n";
-    cout << "Overall ratio:      " << fixed << setprecision(2) << overallRatio << "%\n";
-    cout << "Total excess nodes: " << (totalPredicted - totalReference) << "\n";
+    cout << "[" << algorithm << "] ";
+    cout << "Tests: " << totalTests << " | ";
+    cout << "Perfect: " << perfectMatches << " (" << fixed << setprecision(1) << (100.0 * perfectMatches / totalTests) << "%) | ";
+    cout << "Avg accuracy: " << fixed << setprecision(2) << avgAccuracy << "% | ";
+    cout << "Excess: +" << (totalPredicted - totalReference) << "\n";
 
     return 0;
 }
