@@ -15,7 +15,6 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-// --- Declarații pentru benchmark ---
 double calculateAccuracy(int predicted, int reference);
 int readSingleInt(const string& filepath);
 
@@ -48,7 +47,6 @@ static void BM_CalculateAccuracyImpl(benchmark::State& state, const string& algo
     }
 }
 
-// Benchmarkuri pentru fiecare algoritm
 static void BM_CalculateAccuracy_GreedyHighestOrder(benchmark::State& state) {
     BM_CalculateAccuracyImpl(state, "greedy-highest-order");
 }
@@ -73,14 +71,8 @@ double calculateAccuracy(int predicted, int reference) {
         return (predicted == 0) ? 100.0 : 0.0;
     }
 
-    // For vertex cover, lower is better
-    // If predicted == reference, accuracy is 100%
-    // If predicted > reference, accuracy decreases based on how far off we are
-    // Formula: (reference / predicted) * 100
-    // This gives 100% when equal, and decreases as predicted increases
-
     if (predicted <= reference) {
-        return 100.0;  // Perfect or better than reference (shouldn't happen if ref is optimal)
+        return 100.0;
     }
 
     return (static_cast<double>(reference) / predicted) * 100.0;
@@ -99,7 +91,6 @@ int readSingleInt(const string& filepath) {
 
 #ifndef USE_BENCHMARK
 int main(int argc, char* argv[]) {
-    // ...existing code...
     return 0;
 }
 #endif
