@@ -8,10 +8,15 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    const int N = 20;
+    int N = 20;
     double DENSITY = 0.15;
     if (argc > 1) {
         DENSITY = atof(argv[1]) / 100.0;
+    }
+    if (argc > 2) {
+        N = atoi(argv[2]);
+        if (N < 2) N = 2;
+        if (N > 100) N = 100;
     }
 
     // Random number generator

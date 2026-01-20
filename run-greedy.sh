@@ -13,6 +13,9 @@ if [ ! -f "./$ALGORITHM" ]; then
     exit 1
 fi
 
+# Measure total execution time
+start_time=$(date +%s.%N)
+
 find ./in -type f | while read -r input_file; do
     rel_path="${input_file#./in/}"
 
@@ -27,5 +30,9 @@ find ./in -type f | while read -r input_file; do
 
     ./$ALGORITHM < "$input_file" > "$output_file"
 done
+
+end_time=$(date +%s.%N)
+elapsed=$(echo "$end_time - $start_time" | bc)
+echo "$elapsed" > "./out/$ALGORITHM/.time"
 
 echo "Done! Outputs generated in ./out/$ALGORITHM/"

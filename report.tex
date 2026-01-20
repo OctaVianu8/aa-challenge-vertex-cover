@@ -1,0 +1,320 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[romanian]{babel}
+\usepackage{amsmath}
+
+\usepackage{graphicx}
+%
+\begin{document}
+%
+\title{Vertex Cover Challenge}
+%
+\author{
+Stanescu Matei-Octavian \\
+Nitu Eriko-Laurentiu \\
+Burca Paul \\
+Grupa 322CA \\
+}
+%
+\authorrunning{Vertex Cover}
+%
+\institute{
+Universitatea Politehnica Bucuresti,\\
+Facultatea de Automatica si Calculatoare
+}
+%
+\maketitle
+%
+%
+%
+\section{Introducere}
+
+Problema \textit{Vertex Cover} este o problemă clasică din teoria grafurilor și optimizarea combinatorială. Fie un graf neorientat $G(V, E)$, se cere determinarea unui \textit{set minim de noduri} $C \subseteq V$ astfel încât pentru fiecare muchie $(u, v) \in E$, cel puțin unul dintre capete, $u$ sau $v$, să aparțină lui $C$. Cardinalul minim al unui astfel de set se numește \textit{numărul de acoperire în noduri} (minimum vertex cover) al grafului.
+
+Problema apare natural în numeroase contexte practice, precum securizarea rețelelor (plasarea minimă de noduri de control pentru monitorizarea tuturor legăturilor), alocarea resurselor, analiza circuitelor, probleme de scheduling și dependențe sau bioinformatică, unde grafurile sunt folosite pentru a modela interacțiuni complexe.
+
+Din punct de vedere al complexității computaționale, problema \textit{Minimum Vertex Cover} este \textit{NP-hard} în cazul general. Mai mult, versiunea decizională a problemei este \textit{NP-completă}, fapt ce implică inexistența, cel puțin la momentul actual, a unui algoritm polinomial care să garanteze soluția optimă pentru toate instanțele problemei.
+
+Pentru grafuri de dimensiuni reduse, este posibilă utilizarea unor metode exacte, precum backtracking-ul sau explorarea completă a spațiului de soluții, pentru obținerea rezultatului corect într-un timp rezonabil. Aceste soluții exacte sunt însă rapid impracticabile pe măsură ce dimensiunea grafului crește.
+
+În aplicațiile reale, se recurge frecvent la \textbf{algoritmi aproximați sau euristici}, care sacrifică optimalitatea în favoarea unui timp de execuție redus și a unui consum rezonabil de resurse. Studierea acestor compromisuri între corectitudine, performanță și simplitate de implementare reprezintă un aspect central al analizei algoritmilor pentru această problemă.
+
+\newpage
+\subsection{Corectitudine}
+
+O soluție pentru problema \textit{Vertex Cover} este considerată \textbf{validă} dacă pentru fiecare muchie $(u, v) \in E$, cel puțin unul dintre nodurile $u$ sau $v$ aparține mulțimii de noduri selectate $C$. Această condiție poate fi verificată în timp liniar față de numărul de muchii, parcurgând fiecare muchie și testând dacă este acoperită de cel puțin un nod din soluție.
+
+Atât soluțiile exacte, cât și cele euristice trebuie să respecte această proprietate de corectitudine structurală. Diferența dintre ele constă nu în validitatea soluției, ci în \textit{dimensiunea} mulțimii obținute. O soluție este \textbf{optimă} dacă numărul de noduri selectate este minim posibil.
+
+Determinarea unei soluții optime este însă computațional dificilă, fiind o problemă NP-hard. Din acest motiv, algoritmii euristici nu garantează întotdeauna obținerea rezultatului optim. Pentru evaluarea acestora, se compară dimensiunea soluției produse cu dimensiunea soluției optime, obținută printr-un algoritm exact.
+
+O metrică naturală pentru această comparație este \textbf{raportul de aproximare}, definit ca raportul dintre dimensiunea soluției euristice și dimensiunea soluției optime. În plus, se poate analiza frecvența cu care o euristică reușește să producă soluția optimă pe un set de teste, precum și deviația medie față de optim.
+
+Astfel, corectitudinea este o condiție necesară pentru orice soluție, însă criteriul principal de diferențiere între algoritmi rămâne apropierea față de soluția optimă, în raport cu resursele de timp și spațiu consumate.
+
+\subsection{Eficiența}
+
+Din punctul de vedere al eficienței, există diferențe semnificative între soluțiile exacte și cele euristice pentru problema \textit{Vertex Cover}. Algoritmii exacți au o complexitate exponențială în numărul de noduri și sunt fezabili doar pentru grafuri mici, însă oferă soluția optimă.
+
+În schimb, euristicile și algoritmii aproximați au complexități polinomiale și pot fi rulați rapid pe orice instanță a problemei, cu prețul pierderii garanției de optimalitate. Evaluarea eficienței se realizează prin raportarea timpului de execuție la dimensiunea grafului și prin compararea performanței relative a euristicilor.
+
+\section{Soluții abordate}
+
+\subsection{Soluție exactă: brute-force}
+
+Spre deosebire de algoritmii euristici, care pot produce soluții sub-optimale, metoda \textit{brute-force} garantează întotdeauna obținerea soluției optime pentru problema \textit{Vertex Cover}. Această abordare explorează exhaustiv toate submulțimile posibile de noduri și selectează soluția validă cu cardinal minim.
+
+Pentru un graf cu $n$ noduri, fiecare submulțime de noduri poate fi reprezentată printr-o mască de biți de lungime $n$. O mască este considerată validă dacă pentru fiecare muchie $(u, v) \in E$, cel puțin unul dintre nodurile $u$ sau $v$ este selectat. Verificarea acestei condiții se realizează în timp liniar față de numărul de muchii.
+
+Algoritmul parcurge toate cele $2^n$ măști posibile și calculează dimensiunea fiecărei soluții valide, păstrând-o pe cea cu numărul minim de noduri. Deși corectitudinea este garantată, complexitatea de timp a acestei metode este exponențială, de ordinul $O(2^n \cdot |E|)$, ceea ce o face impracticabilă pentru grafuri mari.
+
+În contextul restricției de maxim 20 de noduri, această soluție este însă fezabilă și joacă un rol esențial ca reper de comparație pentru evaluarea calității soluțiilor euristice.
+
+\subsection{Euristică greedy bazată pe grad}
+
+Prima euristică utilizată pentru problema \textit{Vertex Cover} este o metodă greedy, care construiește incremental o soluție validă, fără a garanta însă optimalitatea. Ideea de bază este de a selecta noduri astfel încât muchiile să fie acoperite cât mai rapid, folosind informații locale despre structura grafului.
+
+Algoritmul pornește prin alegerea unui nod inițial cu grad maxim, pe baza observației că nodurile cu grad ridicat sunt incidente la mai multe muchii și pot contribui semnificativ la acoperirea acestora. Din acest nod se realizează o parcurgere de tip BFS a grafului. Pentru fiecare nod procesat, se examinează toate muchiile grafului pentru a identifica cele incidente nodului curent care nu au fost încă acoperite. Dacă niciunul dintre capetele unei astfel de muchii nu este selectat, algoritmul alege celălalt capăt al muchiei (vecinul) pentru a fi adăugat în soluție.
+
+După terminarea parcurgerii BFS, este posibil ca anumite muchii să rămână neacoperite, în special în cazul grafurilor neconexe. Pentru aceste muchii, algoritmul aplică o regulă suplimentară: dintre cele două capete ale muchiei, este ales nodul cu grad mai mare, presupunând că acesta va acoperi un număr mai mare de muchii rămase.
+
+Complexitatea de timp a acestei euristici este polinomială. Parcurgerea BFS vizitează fiecare nod o singură dată, însă pentru fiecare nod procesat se iterează prin toate muchiile grafului pentru a identifica muchiile incidente. Acest lucru rezultă într-o complexitate totală de ordinul $O(|V| \cdot |E|)$. Din punct de vedere al spațiului, algoritmul utilizează structuri auxiliare liniare în numărul de noduri și muchii.
+
+Deși această metodă produce întotdeauna o soluție validă pentru problema \textit{Vertex Cover}, nu există garanții privind apropierea de soluția optimă. Calitatea rezultatului depinde de structura grafului și de nodul de start ales, însă în practică euristica oferă soluții rezonabile într-un timp de execuție foarte redus.
+
+\newpage
+\subsection{Euristică greedy cu grad maxim și departajare după vecini}
+
+A doua euristică urmărește o strategie greedy clasică pentru \textit{Vertex Cover}: se selectează repetat un nod „important” din graf și se elimină toate muchiile incidente acestuia, până când nu mai rămân muchii neacoperite. Intuiția este că alegerea unui nod cu grad mare acoperă dintr-o singură selecție cât mai multe muchii.
+
+Algoritmul menține listele de adiacență într-o structură de tip \texttt{set}, pentru a permite ștergerea eficientă a muchiilor pe măsură ce noduri sunt introduse în acoperire. La fiecare iterație, se caută nodul \texttt{bestNode} cu grad maxim (numărul de vecini rămași). În cazul în care există mai multe noduri cu același grad maxim, se aplică o regulă de departajare: se preferă nodul care are un vecin cu gradul minim cât mai mic. Această departajare tinde să selecteze noduri care ``protejează'' vecinii slabi (cu puține opțiuni), reducând riscul de a ajunge ulterior în situații unde rămân muchii care pot fi acoperite doar prin alegeri costisitoare.
+
+După alegerea nodului \texttt{bestNode}, toate muchiile incidente lui sunt considerate acoperite: nodul este eliminat din mulțimile de vecini ale tuturor vecinilor săi, iar lista sa de adiacență este golită. Contorul soluției crește cu 1. Procesul se repetă până când numărul de muchii rămase ajunge la 0, moment în care acoperirea este completă.
+
+Complexitatea acestei euristici este polinomială, însă mai mare decât a primei euristici. La fiecare pas se scanează toate nodurile pentru a determina gradul maxim, iar pentru fiecare nod se calculează și minimul gradelor vecinilor. În cel mai defavorabil caz, acest lucru conduce la un timp aproximativ de ordinul $O(|V| \cdot |E|)$, la care se adaugă costurile de ștergere în \texttt{set} (logaritmice). În practică, pentru dimensiuni mici (maxim 20 de noduri), acest cost rămâne rezonabil, iar calitatea soluției este în general mai bună decât a unei alegeri greedy simple.
+
+Ca orice euristică, metoda nu garantează optimalitatea, dar produce întotdeauna o soluție validă, deoarece la final nu rămâne nicio muchie neacoperită. Calitatea depinde de structura grafului și de regulile de departajare folosite la egalitate de grad.
+
+\newpage
+\section{Reducere K-Clique $\leftrightarrow$ Vertex Cover}
+
+Dacă avem un graf $G(V, E)$, găsirea unui K-Clique poate fi redusă la găsirea unui Vertex Cover de mărime $|V| - K$ în graful său complementar $\overline{G}$.
+
+\begin{theorem}
+Există o funcție polinomială $f$ astfel încât:
+\[
+f: (G, K) \rightarrow (\overline{G}, |V| - K)
+\]
+unde $G$ are un K-Clique dacă și numai dacă $\overline{G}$ are un Vertex Cover de mărime $|V| - K$.
+\end{theorem}
+
+\subsection{Direcția 1: Clique $\rightarrow$ Vertex Cover}
+
+\begin{claim}
+Dacă $V' \subseteq V$ formează un K-clique în $G$, atunci $V \setminus V'$ formează un vertex cover de mărime $|V| - K$ în $\overline{G}$.
+\end{claim}
+
+\begin{proof}
+Fie $V'$ un K-clique în $G$.
+\begin{itemize}
+    \item Prin definiția clique: $\forall u, v \in V'$, $(u,v) \in E$ (toate perechile sunt conectate în $G$)
+    \item În complementul $\overline{G}$: $\forall u, v \in V'$, $(u,v) \notin E(\overline{G})$ (nu există muchii între nodurile clique-ului)
+    \item Considerăm o muchie arbitrară $(x,y) \in E(\overline{G})$:
+    \begin{itemize}
+        \item Deoarece $(x,y) \in E(\overline{G})$, rezultă că $(x,y) \notin E$
+        \item Deoarece $V'$ este un clique în $G$, cel puțin unul dintre $\{x, y\}$ trebuie să fie în afara lui $V'$
+        \item Prin urmare, cel puțin unul dintre $\{x, y\}$ aparține lui $V \setminus V'$
+    \end{itemize}
+    \item Deci muchiile din $\overline{G}$ au cel puțin un capăt printre nodurile $V \setminus V'$
+    \item Astfel, $V \setminus V'$ formează un vertex cover în $\overline{G}$
+\end{itemize}
+\end{proof}
+
+\subsection{Direcția 2: Vertex Cover $\rightarrow$ Clique}
+
+\begin{claim}
+Dacă $S$ formează un vertex cover de mărime $|V| - K$ în $\overline{G}$, atunci $V \setminus S$ formează un K-clique în $G$.
+\end{claim}
+
+\begin{proof}
+Fie $S$ un vertex cover de mărime $|V| - K$ în $\overline{G}$.
+\begin{itemize}
+    \item Fie $V' = V \setminus S$, deci $|V'| = K$
+    \item Presupunem prin reducere la absurd că $\exists u, v \in V'$ astfel încât $(u,v) \notin E$
+    \item Atunci $(u,v) \in E(\overline{G})$ (prin definiția grafului complement)
+    \item Dar $u \notin S$ și $v \notin S$ (ambele sunt în $V \setminus S$)
+    \item Aceasta înseamnă că muchia $(u,v)$ din $\overline{G}$ nu este acoperită de $S$ $\rightarrow$ \textbf{contradicție!}
+    \item Prin urmare, $\forall u, v \in V'$, $(u,v) \in E$
+    \item Astfel, nodurile rămase $V' = V \setminus S$ reprezintă un K-Clique în $G$, căci nu există nicio muchie între ele în $\overline{G}$
+\end{itemize}
+\end{proof}
+
+\subsection{Complexitate Polinomială}
+
+Reducerea este polinomială deoarece:
+\begin{enumerate}
+    \item Calcularea lui $\overline{G}$ din $G$: $O(|V|^2)$ timp (verificăm fiecare pereche posibilă de noduri)
+    \item Transformarea parametrului: $K \rightarrow |V| - K$ se face în $O(1)$
+\end{enumerate}
+
+\begin{theorem}[Concluzie]
+Problema K-Clique este NP-Completă, fiind dată reducerea polinomială de la problema Vertex Cover (care este NP-Completă).
+\end{theorem}
+
+\textbf{Observație cheie:} Nodurile din clique în $G$ nu au muchii între ele în $\overline{G}$, prin urmare nodurile rămase trebuie să acopere toate muchiile din $\overline{G}$.
+
+\newpage
+\section{Metodologia de Evaluare}
+
+Pentru a evalua calitatea soluțiilor euristice, am dezvoltat o infrastructură completă de testare care generează grafuri diverse, calculează soluțiile optime prin metoda exactă (brute-force) și compară rezultatele euristicilor cu acestea.
+
+\subsection{Generarea Testelor}
+
+Testele sunt organizate pe \textbf{clase}, fiecare clasă reprezentând un tip specific de graf cu proprietăți distincte. Am implementat trei generatoare de grafuri:
+
+\begin{enumerate}
+    \item \textbf{Grafuri aleatoare} (\texttt{test-gen-random}): Generează grafuri cu $N = 20$ noduri, unde fiecare pereche de noduri are o probabilitate dată (densitatea) de a forma o muchie. Densitățile testate sunt 10\%, 30\% și 67\%, acoperind grafuri sparse, medii și dense.
+
+    \item \textbf{Cicluri cu coarde} (\texttt{test-gen-cycle-with-cords}): Generează un ciclu hamiltonian de 20 noduri la care se adaugă câteva coarde aleatorii. Această structură testează comportamentul euristicilor pe grafuri cu structură regulată.
+
+    \item \textbf{Grafuri bipartite} (\texttt{test-gen-bipartite}): Generează grafuri cu două mulțimi disjuncte de noduri, unde muchiile există doar între cele două mulțimi. Grafurile bipartite au proprietăți speciale pentru vertex cover (teorema lui König).
+\end{enumerate}
+
+\subsection{Pipeline-ul de Evaluare}
+
+Evaluarea se realizează automat prin comanda \texttt{make pipeline}, care execută următorii pași:
+
+\begin{enumerate}
+    \item \textbf{Generare teste}: Se generează câte 10 instanțe pentru fiecare clasă de grafuri (random-10\%, random-30\%, random-67\%, cycle-with-cords, bipartite).
+
+    \item \textbf{Calculare referințe}: Pentru fiecare test, algoritmul brute-force calculează soluția optimă și o salvează în directorul \texttt{ref/}.
+
+    \item \textbf{Rulare euristici}: Fiecare algoritm euristic este rulat pe toate testele, iar rezultatele sunt salvate în \texttt{out/<algoritm>/}.
+
+    \item \textbf{Calculare acuratețe}: Se compară rezultatele euristicilor cu referințele optime.
+\end{enumerate}
+
+\subsection{Metrici de Evaluare}
+
+Pentru fiecare euristică și clasă de teste, se calculează:
+
+\begin{itemize}
+    \item \textbf{Perfect matches}: Numărul de teste pentru care euristica a găsit soluția optimă.
+
+    \item \textbf{Acuratețe medie}: Media raportului $\frac{\text{optim}}{\text{euristic}} \times 100\%$ pe toate testele. O valoare de 100\% indică soluție optimă, valori mai mici indică soluții sub-optimale.
+
+    \item \textbf{Excess}: Suma diferențelor $(\text{euristic} - \text{optim})$ pe toate testele din clasă, reprezentând numărul total de noduri ``în plus'' selectate față de optim.
+\end{itemize}
+
+Raportarea se face atât per clasă (pentru a identifica tipurile de grafuri pe care euristica performează mai slab), cât și agregat pe toate testele.
+
+\subsection{Rezultatele Testelor}
+
+Am rulat ambele euristici pe un set de 500 de teste (100 per clasă). Rezultatele sunt prezentate în tabelele următoare:
+
+\begin{table}[h]
+\centering
+\caption{Rezultate: Greedy cu BFS (greedy-highest-order)}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Clasă} & \textbf{Teste} & \textbf{Perfect (\%)} & \textbf{Avg (\%)} & \textbf{Excess} \\
+\hline
+Random 10\% & 100 & 48 (48.0\%) & 92.19\% & +73 \\
+Random 30\% & 100 & 27 (27.0\%) & 91.19\% & +126 \\
+Random 67\% & 100 & 19 (19.0\%) & 93.99\% & +103 \\
+Bipartite & 100 & 90 (90.0\%) & 98.18\% & +20 \\
+Cycle-with-cords & 100 & 48 (48.0\%) & 94.89\% & +58 \\
+\hline
+\textbf{TOTAL} & 500 & 232 (46.4\%) & 94.09\% & +380 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Rezultate: Greedy cu grad maxim și departajare (greedy-remove-edges)}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Clasă} & \textbf{Teste} & \textbf{Perfect (\%)} & \textbf{Avg (\%)} & \textbf{Excess} \\
+\hline
+Random 10\% & 100 & 95 (95.0\%) & 99.43\% & +5 \\
+Random 30\% & 100 & 87 (87.0\%) & 99.03\% & +13 \\
+Random 67\% & 100 & 83 (83.0\%) & 99.00\% & +17 \\
+Bipartite & 100 & 78 (78.0\%) & 97.51\% & +27 \\
+Cycle-with-cords & 100 & 79 (79.0\%) & 98.09\% & +21 \\
+\hline
+\textbf{TOTAL} & 500 & 422 (84.4\%) & 98.61\% & +83 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Comparație timp de execuție (500 teste, N=20)}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Algoritm} & \textbf{Timp total} & \textbf{Perfect (\%)} & \textbf{Avg (\%)} \\
+\hline
+Brute-Force & 10.02s & 100.0\% & 100.00\% \\
+Greedy-highest-order & 3.66s & 46.4\% & 94.09\% \\
+Greedy-remove-edges & 3.52s & 84.4\% & 98.61\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Analiza Rezultatelor}
+
+Euristica \textbf{greedy-remove-edges} (cu departajare după gradul minim al vecinilor) este semnificativ mai performantă:
+
+\begin{itemize}
+    \item \textbf{Perfect matches}: 84.4\% vs 46.4\% — aproape dublu
+    \item \textbf{Acuratețe medie}: 98.61\% vs 94.09\%
+    \item \textbf{Excess total}: +83 vs +380 — de peste 4 ori mai puține noduri în plus
+    \item \textbf{Timp similar}: ambele euristici rulează în ~3.5s, de ~3x mai rapid decât brute-force
+\end{itemize}
+
+\textbf{Observații pe clase:}
+\begin{itemize}
+    \item Pe grafuri \textit{sparse} (densitate 10\%), greedy-remove-edges atinge 95\% perfect matches, în timp ce greedy-highest-order doar 48\%.
+    \item Pe grafuri \textit{bipartite}, ambele euristici performează bine (78-90\% perfect).
+    \item Greedy-remove-edges are performanță consistentă pe toate clasele (78-95\% perfect), în timp ce greedy-highest-order variază mult (19-90\%).
+\end{itemize}
+
+\textbf{Observații pe timp de execuție:}
+\begin{itemize}
+    \item Brute-force (complexitate $O(2^n \cdot |E|)$) este de ~3x mai lent, dar garantează soluția optimă.
+    \item Euristicile au timp similar deoarece ambele au complexitate polinomială ($O(|V| \cdot |E|)$).
+    \item Pentru $N = 20$, diferența nu este dramatică, dar pentru grafuri mari brute-force devine impracticabil.
+\end{itemize}
+
+Concluzia este că regula de departajare (alegerea nodului cu vecin de grad minim) îmbunătățește semnificativ calitatea soluției, reducând riscul de a ``bloca'' noduri care ulterior devin greu de acoperit.
+
+\newpage
+\subsection{Analiza Performanței în funcție de N}
+
+Pentru a înțelege mai bine comportamentul algoritmilor, am măsurat numărul de operații pe secundă (ops/s) în funcție de numărul de noduri $N$. Graficele următoare prezintă rezultatele obținute pe grafuri aleatorii cu densitate 30\%.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{benchmark/benchmark_plots.png}
+\caption{Comparație performanță: ops/s în funcție de numărul de noduri}
+\end{figure}
+
+\textbf{Observații cheie:}
+\begin{itemize}
+    \item \textbf{Euristicile} (greedy-highest-order și greedy-remove-edges) mențin o performanță relativ constantă (~300-400 ops/s) indiferent de $N$, confirmând complexitatea polinomială.
+
+    \item \textbf{Brute-force} prezintă degradare exponențială: de la ~350 ops/s la $N=5$ la doar ~2 ops/s la $N=25$. La $N=25$, o singură execuție durează ~400ms.
+
+    \item Pentru $N > 25$, brute-force devine impracticabil (timp de execuție > 1 secundă per graf), în timp ce euristicile rămân rapide.
+\end{itemize}
+
+Aceste rezultate confirmă necesitatea utilizării euristicilor pentru grafuri mari, unde soluția exactă nu poate fi calculată într-un timp rezonabil.
+
+\end{document}

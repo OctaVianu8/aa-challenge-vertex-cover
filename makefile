@@ -47,8 +47,12 @@ pipeline: all
 	./generate-ref.sh
 	./run-greedy.sh greedy-highest-order
 	./run-greedy.sh greedy-remove-edges
-	./calculate-accuracy greedy-highest-order
-	./calculate-accuracy greedy-remove-edges
+	@echo ""
+	@echo "=== RESULTS ==="
+	@./calculate-accuracy greedy-highest-order
+	@./calculate-accuracy greedy-remove-edges
+	@echo "[brute-force] (Time: $$(cat ./ref/.time)s)"
+	@echo "  TOTAL  : Tests: $$(find ./ref -name '*.ref' | wc -l) | Perfect: 100.0% | Avg: 100.00%"
 
 clean:
 	rm -f $(EXECUTABLES)

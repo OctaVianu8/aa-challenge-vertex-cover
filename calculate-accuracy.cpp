@@ -68,6 +68,10 @@ int main(int argc, char* argv[]) {
         if (!entry.is_regular_file()) continue;
 
         string filename = entry.path().filename().string();
+
+        // Skip hidden files (like .time)
+        if (filename[0] == '.') continue;
+
         string baseName = filename.substr(0, filename.find_last_of('.'));
 
         // Get relative path from outDir to preserve folder structure
@@ -83,7 +87,6 @@ int main(int argc, char* argv[]) {
         }
 
         if (!fs::exists(refFile)) {
-            cerr << "Warning: Reference file not found for " << baseName << "\n";
             continue;
         }
 
@@ -123,8 +126,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Read execution time if available
+    string timeFile = outDir + "/.time";
+    string execTime = "N/A";
+    if (fs::exists(timeFile)) {
+        ifstream tf(timeFile);
+        if (tf.is_open()) {
+            tf >> execTime;
+            execTime += "s";
+        }
+    }
+
     // Print per-class statistics
-    cout << "[" << algorithm << "]\n";
+    cout << "[" << algorithm << "] (Time: " << execTime << ")\n";
     for (const auto& [className, stats] : classStats) {
         double avgAccuracy = stats.totalAccuracy / stats.totalTests;
         cout << "  Class " << setw(3) << className << ": ";
