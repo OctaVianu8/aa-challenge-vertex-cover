@@ -10,5 +10,5 @@ benchmark/
 benchmark
 calculate-accuracy-bench
 calculate-benchmark
-/benchmark
+/benchmark/*
 calculate-benchmark
