@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <map>
 #include <iomanip>
 #include <cmath>
 
@@ -10,11 +11,12 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-struct TestResult {
-    string testName;
-    int predicted;
-    int reference;
-    double accuracy;
+struct ClassStats {
+    int totalTests = 0;
+    int perfectMatches = 0;
+    double totalAccuracy = 0.0;
+    int totalPredicted = 0;
+    int totalReference = 0;
 };
 
 double calculateAccuracy(int predicted, int reference) {
@@ -59,12 +61,8 @@ int main(int argc, char* argv[]) {
 
     string outDir = "./out/" + algorithm;
 
-    vector<TestResult> results;
-    double totalAccuracy = 0.0;
-    int totalTests = 0;
-    int perfectMatches = 0;
-    int totalPredicted = 0;
-    int totalReference = 0;
+    map<string, ClassStats> classStats;  // key: class name (e.g., "10", "30", "67")
+    ClassStats overall;
 
     for (const auto& entry : fs::recursive_directory_iterator(outDir)) {
         if (!entry.is_regular_file()) continue;
@@ -94,15 +92,25 @@ int main(int argc, char* argv[]) {
             int reference = readSingleInt(refFile);
             double accuracy = calculateAccuracy(predicted, reference);
 
-            results.push_back({baseName, predicted, reference, accuracy});
+            // Determine class name from directory
+            string className = relDir.empty() ? "default" : relDir;
 
-            totalAccuracy += accuracy;
-            totalTests++;
-            totalPredicted += predicted;
-            totalReference += reference;
-
+            // Update class stats
+            classStats[className].totalTests++;
+            classStats[className].totalAccuracy += accuracy;
+            classStats[className].totalPredicted += predicted;
+            classStats[className].totalReference += reference;
             if (predicted == reference) {
-                perfectMatches++;
+                classStats[className].perfectMatches++;
+            }
+
+            // Update overall stats
+            overall.totalTests++;
+            overall.totalAccuracy += accuracy;
+            overall.totalPredicted += predicted;
+            overall.totalReference += reference;
+            if (predicted == reference) {
+                overall.perfectMatches++;
             }
 
         } catch (const exception& e) {
@@ -110,19 +118,29 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (totalTests == 0) {
+    if (overall.totalTests == 0) {
         cerr << "No tests were processed!\n";
         return 1;
     }
 
-    // Summary statistics
-    double avgAccuracy = totalAccuracy / totalTests;
+    // Print per-class statistics
+    cout << "[" << algorithm << "]\n";
+    for (const auto& [className, stats] : classStats) {
+        double avgAccuracy = stats.totalAccuracy / stats.totalTests;
+        cout << "  Class " << setw(3) << className << ": ";
+        cout << "Tests: " << setw(3) << stats.totalTests << " | ";
+        cout << "Perfect: " << setw(3) << stats.perfectMatches << " (" << fixed << setprecision(1) << setw(5) << (100.0 * stats.perfectMatches / stats.totalTests) << "%) | ";
+        cout << "Avg: " << fixed << setprecision(2) << setw(6) << avgAccuracy << "% | ";
+        cout << "Excess: +" << (stats.totalPredicted - stats.totalReference) << "\n";
+    }
 
-    cout << "[" << algorithm << "] ";
-    cout << "Tests: " << totalTests << " | ";
-    cout << "Perfect: " << perfectMatches << " (" << fixed << setprecision(1) << (100.0 * perfectMatches / totalTests) << "%) | ";
-    cout << "Avg accuracy: " << fixed << setprecision(2) << avgAccuracy << "% | ";
-    cout << "Excess: +" << (totalPredicted - totalReference) << "\n";
+    // Print overall statistics
+    double avgAccuracy = overall.totalAccuracy / overall.totalTests;
+    cout << "  TOTAL  : ";
+    cout << "Tests: " << setw(3) << overall.totalTests << " | ";
+    cout << "Perfect: " << setw(3) << overall.perfectMatches << " (" << fixed << setprecision(1) << setw(5) << (100.0 * overall.perfectMatches / overall.totalTests) << "%) | ";
+    cout << "Avg: " << fixed << setprecision(2) << setw(6) << avgAccuracy << "% | ";
+    cout << "Excess: +" << (overall.totalPredicted - overall.totalReference) << "\n";
 
     return 0;
 }
