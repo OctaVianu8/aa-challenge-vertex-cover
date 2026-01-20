@@ -39,6 +39,7 @@ int main() {
     queue<int> q;
     q.push(startNode);
     visited[startNode] = true;
+    chosen[startNode] = true;
 
     while (!q.empty()) {
         int u = q.front();

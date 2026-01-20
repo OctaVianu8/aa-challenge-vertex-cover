@@ -7,3 +7,4 @@ calculate-accuracy
 greedy-highest-order
 greedy-remove-edges
 test-gen-cycle-with-cords
+test-gen-bipartite

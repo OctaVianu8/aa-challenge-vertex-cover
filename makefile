@@ -5,7 +5,9 @@ CXXFLAGS_17 = -std=c++17 -O2
 # Default algorithm
 ALGORITHM ?= greedy-highest-order
 
-EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random test-gen-cycle-with-cords calculate-accuracy
+COUNT ?= 10
+
+EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random test-gen-cycle-with-cords test-gen-bipartite calculate-accuracy
 
 all: $(EXECUTABLES)
 
@@ -24,6 +26,9 @@ test-gen-random: test-gen-random.cpp
 test-gen-cycle-with-cords: test-gen-cycle-with-cords.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
+test-gen-bipartite: test-gen-bipartite.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
 calculate-accuracy: calculate-accuracy.cpp
 	$(CXX) $(CXXFLAGS_17) -o $@ $<
 
@@ -33,17 +38,12 @@ generate-tests: test-gen-random
 generate-ref: brute-force
 	./generate-ref.sh
 
-run-greedy: $(ALGORITHM)
-	./run-greedy.sh $(ALGORITHM)
-
-accuracy: calculate-accuracy
-	./calculate-accuracy $(ALGORITHM)
-
 pipeline: all
-	./generate-tests-random.sh 30 30
-	./generate-tests-random.sh 30 67
-	./generate-tests-random.sh 30 10
-	./generate-tests-cycle-with-cords.sh 30
+	./generate-tests-random.sh $(COUNT) 30
+	./generate-tests-random.sh $(COUNT) 67
+	./generate-tests-random.sh $(COUNT) 10
+	./generate-tests-cycle-with-cords.sh $(COUNT)
+	./generate-tests-bipartite.sh $(COUNT)
 	./generate-ref.sh
 	./run-greedy.sh greedy-highest-order
 	./run-greedy.sh greedy-remove-edges
