@@ -5,3 +5,4 @@ brute-force
 test-gen-random
 calculate-accuracy
 greedy-highest-order
+greedy-remove-edges

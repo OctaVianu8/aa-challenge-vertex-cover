@@ -41,8 +41,10 @@ pipeline: all
 	./generate-tests-random.sh 30 67
 	./generate-tests-random.sh 30 10
 	./generate-ref.sh
-	./run-greedy.sh $(ALGORITHM)
-	./calculate-accuracy $(ALGORITHM)
+	./run-greedy.sh greedy-highest-order
+	./run-greedy.sh greedy-remove-edges
+	./calculate-accuracy greedy-highest-order
+	./calculate-accuracy greedy-remove-edges
 
 clean:
 	rm -f $(EXECUTABLES)
