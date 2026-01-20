@@ -46,14 +46,18 @@ int readSingleInt(const string& filepath) {
 }
 
 int main(int argc, char* argv[]) {
-    string outDir = "./out/greedy-highest-order";
-    string refDir = "./ref/random";
+    string algorithm = "greedy-highest-order";
+    string refDir = "./ref";
 
-    // Allow custom directories via command line
+    // Usage: ./calculate-accuracy [ALGORITHM] [REF_DIR]
+    if (argc >= 2) {
+        algorithm = argv[1];
+    }
     if (argc >= 3) {
-        outDir = argv[1];
         refDir = argv[2];
     }
+
+    string outDir = "./out/" + algorithm;
 
     vector<TestResult> results;
     double totalAccuracy = 0.0;
@@ -75,14 +79,23 @@ int main(int argc, char* argv[]) {
          << setw(10) << "Diff" << "\n";
     cout << string(54, '-') << "\n";
 
-    for (const auto& entry : fs::directory_iterator(outDir)) {
+    for (const auto& entry : fs::recursive_directory_iterator(outDir)) {
         if (!entry.is_regular_file()) continue;
 
         string filename = entry.path().filename().string();
         string baseName = filename.substr(0, filename.find_last_of('.'));
 
+        // Get relative path from outDir to preserve folder structure
+        string relPath = fs::relative(entry.path(), outDir).string();
+        string relDir = fs::path(relPath).parent_path().string();
+
         string outFile = entry.path().string();
-        string refFile = refDir + "/" + baseName + ".ref";
+        string refFile;
+        if (relDir.empty()) {
+            refFile = refDir + "/" + baseName + ".ref";
+        } else {
+            refFile = refDir + "/" + relDir + "/" + baseName + ".ref";
+        }
 
         if (!fs::exists(refFile)) {
             cerr << "Warning: Reference file not found for " << baseName << "\n";

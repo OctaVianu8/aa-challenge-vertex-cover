@@ -3,12 +3,16 @@
 #include <random>
 #include <set>
 #include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
-int main() {
-    const int N = 20;           // number of nodes
-    const double DENSITY = 0.15; // edge probability (~15% for sparse graph)
+int main(int argc, char* argv[]) {
+    const int N = 20;
+    double DENSITY = 0.15;
+    if (argc > 1) {
+        DENSITY = atof(argv[1]) / 100.0;
+    }
 
     // Random number generator
     random_device rd;
