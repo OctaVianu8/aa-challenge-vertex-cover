@@ -165,10 +165,10 @@ def main():
     ax.set_yscale('log')
 
     plt.tight_layout()
-    plt.savefig('benchmark/benchmark_plots.png', dpi=150)
-    plt.savefig('benchmark/benchmark_plots.pdf')
-    print("Saved: benchmark/benchmark_plots.png")
-    print("Saved: benchmark/benchmark_plots.pdf")
+    plt.savefig('benchmark-graphs/benchmark_plots.png', dpi=150)
+    plt.savefig('benchmark-graphs/benchmark_plots.pdf')
+    print("Saved: benchmark-graphs/benchmark_plots.png")
+    print("Saved: benchmark-graphs/benchmark_plots.pdf")
 
     # Also create individual plots for the report
     for name, results, title, color in [
@@ -180,9 +180,9 @@ def main():
             fig, ax = plt.subplots(figsize=(6, 4))
             plot_algorithm(ax, results, title, color)
             plt.tight_layout()
-            plt.savefig(f'benchmark/{name}.png', dpi=150)
-            plt.savefig(f'benchmark/{name}.pdf')
-            print(f"Saved: benchmark/{name}.png")
+            plt.savefig(f'benchmark-graphs/{name}.png', dpi=150)
+            plt.savefig(f'benchmark-graphs/{name}.pdf')
+            print(f"Saved: benchmark-graphs/{name}.png")
             plt.close()
 
 if __name__ == '__main__':

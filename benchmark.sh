@@ -10,12 +10,12 @@ echo "Building..."
 make brute-force greedy-highest-order greedy-remove-edges test-gen-random > /dev/null 2>&1
 
 # Create benchmark directory
-mkdir -p benchmark
+mkdir -p benchmark-graphs
 
 # Function to benchmark an algorithm
 benchmark_algo() {
     ALGO=$1
-    OUTPUT_FILE="benchmark/${ALGO}.dat"
+    OUTPUT_FILE="benchmark-graphs/${ALGO}.dat"
 
     echo "Benchmarking $ALGO..."
     echo "# N avg_ops_per_sec min_ops max_ops" > $OUTPUT_FILE
@@ -68,5 +68,5 @@ benchmark_algo "greedy-highest-order"
 benchmark_algo "greedy-remove-edges"
 benchmark_algo "brute-force"
 
-echo "Done! Data saved to benchmark/"
+echo "Done! Data saved to benchmark-graphs/"
 echo "Run 'python3 plot-benchmark.py' to generate graphs"
