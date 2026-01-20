@@ -6,3 +6,9 @@ test-gen-random
 calculate-accuracy
 greedy-highest-order
 greedy-remove-edges
+benchmark/
+benchmark
+calculate-accuracy-bench
+calculate-benchmark
+/benchmark
+calculate-benchmark

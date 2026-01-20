@@ -7,3 +7,4 @@ Benchmarks greedy algorithms for the vertex cover problem against brute-force op
 ```bash
 make pipeline
 ```
+

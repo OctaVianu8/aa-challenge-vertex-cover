@@ -24,6 +24,9 @@ test-gen-random: test-gen-random.cpp
 calculate-accuracy: calculate-accuracy.cpp
 	$(CXX) $(CXXFLAGS_17) -o $@ $<
 
+calculate-benchmark: calculate-benchmark.cpp
+	$(CXX) $(CXXFLAGS_17) -DUSE_BENCHMARK -I./benchmark/include -L./benchmark/build/src -o $@ $< -lbenchmark_main -lbenchmark -lpthread -ldl -lm
+
 generate-tests: test-gen-random
 	./generate-tests-random.sh 10
 
