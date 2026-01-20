@@ -5,7 +5,7 @@ CXXFLAGS_17 = -std=c++17 -O2
 # Default algorithm
 ALGORITHM ?= greedy-highest-order
 
-EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random calculate-accuracy
+EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random test-gen-cycle-with-cords calculate-accuracy
 
 all: $(EXECUTABLES)
 
@@ -19,6 +19,9 @@ greedy-remove-edges: greedy-remove-edges.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 test-gen-random: test-gen-random.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+test-gen-cycle-with-cords: test-gen-cycle-with-cords.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 calculate-accuracy: calculate-accuracy.cpp
@@ -40,6 +43,7 @@ pipeline: all
 	./generate-tests-random.sh 30 30
 	./generate-tests-random.sh 30 67
 	./generate-tests-random.sh 30 10
+	./generate-tests-cycle-with-cords.sh 30
 	./generate-ref.sh
 	./run-greedy.sh greedy-highest-order
 	./run-greedy.sh greedy-remove-edges
