@@ -101,6 +101,24 @@ Complexitatea acestei euristici este polinomială, însă mai mare decât a prim
 
 Ca orice euristică, metoda nu garantează optimalitatea, dar produce întotdeauna o soluție validă, deoarece la final nu rămâne nicio muchie neacoperită. Calitatea depinde de structura grafului și de regulile de departajare folosite la egalitate de grad.
 
+\subsection{Avantaje și Dezavantaje}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Algoritm} & \textbf{Avantaje} & \textbf{Dezavantaje} \\
+\hline
+Brute-force & Garantează soluția optimă & Complexitate exponențială $O(2^n)$; impracticabil pentru $N > 25$ \\
+\hline
+Greedy-BFS & Rapid; simplu de implementat & Calitate slabă (46\% perfect); dependent de nodul de start \\
+\hline
+Greedy-grad-maxim & Calitate foarte bună (84\% perfect); consistent pe toate tipurile de grafuri & Puțin mai complex; tot nu garantează optimalitatea \\
+\hline
+\end{tabular}
+\caption{Comparație avantaje/dezavantaje}
+\end{table}
+
 \newpage
 \section{Reducere K-Clique $\leftrightarrow$ Vertex Cover}
 
@@ -173,6 +191,16 @@ Problema K-Clique este NP-Completă, fiind dată reducerea polinomială de la pr
 \section{Metodologia de Evaluare}
 
 Pentru a evalua calitatea soluțiilor euristice, am dezvoltat o infrastructură completă de testare care generează grafuri diverse, calculează soluțiile optime prin metoda exactă (brute-force) și compară rezultatele euristicilor cu acestea.
+
+\subsection{Specificații Sistem}
+
+Testele au fost rulate pe un sistem cu următoarele caracteristici:
+\begin{itemize}
+    \item \textbf{Sistem de operare}: Ubuntu 24.04 LTS (WSL)
+    \item \textbf{Procesor}: AMD Ryzen AI 9 HX 370
+    \item \textbf{Memorie RAM}: 32 GB
+    \item \textbf{Compilator}: g++ cu flag-uri \texttt{-O2 -std=c++17}
+\end{itemize}
 
 \subsection{Generarea Testelor}
 
@@ -316,5 +344,41 @@ Pentru a înțelege mai bine comportamentul algoritmilor, am măsurat numărul d
 \end{itemize}
 
 Aceste rezultate confirmă necesitatea utilizării euristicilor pentru grafuri mari, unde soluția exactă nu poate fi calculată într-un timp rezonabil.
+
+\section{Concluzii}
+
+În urma analizei efectuate, recomandăm următoarea abordare în practică:
+
+\begin{itemize}
+    \item Pentru grafuri mici ($N \leq 20$), algoritmul \textbf{brute-force} oferă soluția optimă într-un timp acceptabil.
+
+    \item Pentru grafuri medii și mari, euristica \textbf{greedy-remove-edges} (cu departajare după gradul minim al vecinilor) reprezintă cea mai bună alegere, oferind un echilibru excelent între calitate (84\% soluții optime, 98.6\% acuratețe medie) și performanță.
+
+    \item Euristica greedy-highest-order (BFS) este utilă doar când simplitatea implementării este prioritară și toleranța la erori este mare.
+\end{itemize}
+
+Concluzia principală este că \textbf{regula de departajare} (alegerea nodului cu un vecin de grad minim) îmbunătățește dramatic calitatea soluțiilor greedy, fără a crește semnificativ complexitatea.
+
+\begin{thebibliography}{9}
+
+\bibitem{clrs}
+Cormen, T.H., Leiserson, C.E., Rivest, R.L., Stein, C. (2009). \textit{Introduction to Algorithms} (3rd ed.). MIT Press.
+
+\bibitem{karp}
+Karp, R.M. (1972). Reducibility among combinatorial problems. In \textit{Complexity of Computer Computations}, Springer.
+
+\bibitem{approx}
+Vazirani, V.V. (2001). \textit{Approximation Algorithms}. Springer.
+
+\bibitem{preprint}
+Vertex Cover Problem: Kernelization and Approximation Techniques (2025). Preprints.org. Disponibil la: \texttt{https://www.preprints.org/manuscript/202506.0875/v6}
+
+\bibitem{liverpool}
+Sherali, M. (2005). \textit{Vertex Cover -- 2-Approximation Algorithm}. COMP309 Lecture Notes, University of Liverpool. Disponibil la: \texttt{https://cgi.csc.liv.ac.uk/\textasciitilde michele/TEACHING/COMP309/2005/Lec10.4.4.pdf}
+
+\bibitem{hvala}
+Vega, F. (2025). An Approximate Solution to the Minimum Vertex Cover Problem: The Hvala Algorithm. Preprints.org. Disponibil la: \texttt{https://www.preprints.org/manuscript/202506.0875/v8}
+
+\end{thebibliography}
 
 \end{document}
