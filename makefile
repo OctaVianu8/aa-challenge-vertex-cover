@@ -2,67 +2,76 @@ CXX = g++
 CXXFLAGS = -O2
 CXXFLAGS_17 = -std=c++17 -O2
 
+# Directories
+SRC_DIR = src
+BIN_DIR = bin
+SCRIPTS_DIR = scripts
+TESTS_DIR = tests
+
 # Default algorithm
 ALGORITHM ?= greedy-highest-order
 
 COUNT ?= 10
 
-EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random test-gen-cycle-with-cords test-gen-bipartite calculate-accuracy
+EXECUTABLES = $(BIN_DIR)/brute-force $(BIN_DIR)/greedy-highest-order $(BIN_DIR)/greedy-remove-edges $(BIN_DIR)/test-gen-random $(BIN_DIR)/test-gen-cycle-with-cords $(BIN_DIR)/test-gen-bipartite $(BIN_DIR)/calculate-accuracy
 
-all: $(EXECUTABLES)
+all: $(BIN_DIR) $(EXECUTABLES)
 
-brute-force: brute-force.cpp
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BIN_DIR)/brute-force: $(SRC_DIR)/brute-force.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-greedy-highest-order: greedy-highest-order.cpp
+$(BIN_DIR)/greedy-highest-order: $(SRC_DIR)/greedy-highest-order.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-greedy-remove-edges: greedy-remove-edges.cpp
+$(BIN_DIR)/greedy-remove-edges: $(SRC_DIR)/greedy-remove-edges.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-test-gen-random: test-gen-random.cpp
+$(BIN_DIR)/test-gen-random: $(SRC_DIR)/test-gen-random.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-test-gen-cycle-with-cords: test-gen-cycle-with-cords.cpp
+$(BIN_DIR)/test-gen-cycle-with-cords: $(SRC_DIR)/test-gen-cycle-with-cords.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-test-gen-bipartite: test-gen-bipartite.cpp
+$(BIN_DIR)/test-gen-bipartite: $(SRC_DIR)/test-gen-bipartite.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-calculate-accuracy: calculate-accuracy.cpp
+$(BIN_DIR)/calculate-accuracy: $(SRC_DIR)/calculate-accuracy.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS_17) -o $@ $<
 
-calculate-google-benchmark: calculate-google-benchmark.cpp
+$(BIN_DIR)/calculate-google-benchmark: $(SRC_DIR)/calculate-google-benchmark.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS_17) -DUSE_BENCHMARK -I./benchmark/include -L./benchmark/build/src -o $@ $< -lbenchmark_main -lbenchmark -lpthread -ldl -lm
 
-generate-tests: test-gen-random
-	./generate-tests-random.sh 10
+generate-tests: $(BIN_DIR)/test-gen-random
+	$(SCRIPTS_DIR)/generate-tests-random.sh 10
 
-generate-ref: brute-force
-	./generate-ref.sh
+generate-ref: $(BIN_DIR)/brute-force
+	$(SCRIPTS_DIR)/generate-ref.sh
 
 pipeline: all
-	./generate-tests-random.sh $(COUNT) 30
-	./generate-tests-random.sh $(COUNT) 67
-	./generate-tests-random.sh $(COUNT) 10
-	./generate-tests-cycle-with-cords.sh $(COUNT)
-	./generate-tests-bipartite.sh $(COUNT)
-	./generate-ref.sh
-	./run-greedy.sh greedy-highest-order
-	./run-greedy.sh greedy-remove-edges
+	$(SCRIPTS_DIR)/generate-tests-random.sh $(COUNT) 30
+	$(SCRIPTS_DIR)/generate-tests-random.sh $(COUNT) 67
+	$(SCRIPTS_DIR)/generate-tests-random.sh $(COUNT) 10
+	$(SCRIPTS_DIR)/generate-tests-cycle-with-cords.sh $(COUNT)
+	$(SCRIPTS_DIR)/generate-tests-bipartite.sh $(COUNT)
+	$(SCRIPTS_DIR)/generate-ref.sh
+	$(SCRIPTS_DIR)/run-greedy.sh greedy-highest-order
+	$(SCRIPTS_DIR)/run-greedy.sh greedy-remove-edges
 	@echo ""
 	@echo "=== RESULTS ==="
-	@./calculate-accuracy greedy-highest-order
-	@./calculate-accuracy greedy-remove-edges
-	@echo "[brute-force] (Time: $$(cat ./ref/.time)s)"
-	@echo "  TOTAL  : Tests: $$(find ./ref -name '*.ref' | wc -l) | Perfect: 100.0% | Avg: 100.00%"
+	@$(BIN_DIR)/calculate-accuracy greedy-highest-order
+	@$(BIN_DIR)/calculate-accuracy greedy-remove-edges
+	@echo "[brute-force] (Time: $$(cat $(TESTS_DIR)/ref/.time)s)"
+	@echo "  TOTAL  : Tests: $$(find $(TESTS_DIR)/ref -name '*.ref' | wc -l) | Perfect: 100.0% | Avg: 100.00%"
 
 clean:
-	rm -f $(EXECUTABLES)
+	rm -rf $(BIN_DIR)
 
 clean-all: clean
-	rm -rf ./in/*
-	rm -rf ./ref/*
-	rm -rf ./out/*
+	rm -rf $(TESTS_DIR)/in/*
+	rm -rf $(TESTS_DIR)/ref/*
+	rm -rf $(TESTS_DIR)/out/*
 
 .PHONY: all clean clean-all generate-tests generate-ref run-greedy accuracy pipeline

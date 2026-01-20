@@ -1,10 +1,9 @@
-ref/
-out/
-brute-force
-test-gen-random
-calculate-accuracy
-greedy-highest-order
-greedy-remove-edges
-test-gen-cycle-with-cords
-test-gen-bipartite
+# Build output
+bin/
+
+# Test output
+tests/ref/
+tests/out/
+
+# Virtual environment
 .venv
