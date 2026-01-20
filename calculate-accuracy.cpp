@@ -24,14 +24,8 @@ double calculateAccuracy(int predicted, int reference) {
         return (predicted == 0) ? 100.0 : 0.0;
     }
 
-    // For vertex cover, lower is better
-    // If predicted == reference, accuracy is 100%
-    // If predicted > reference, accuracy decreases based on how far off we are
-    // Formula: (reference / predicted) * 100
-    // This gives 100% when equal, and decreases as predicted increases
-
     if (predicted <= reference) {
-        return 100.0;  // Perfect or better than reference (shouldn't happen if ref is optimal)
+        return 100.0;
     }
 
     return (static_cast<double>(reference) / predicted) * 100.0;
@@ -61,7 +55,7 @@ int main(int argc, char* argv[]) {
 
     string outDir = "./out/" + algorithm;
 
-    map<string, ClassStats> classStats;  // key: class name (e.g., "10", "30", "67")
+    map<string, ClassStats> classStats;
     ClassStats overall;
 
     for (const auto& entry : fs::recursive_directory_iterator(outDir)) {
@@ -69,12 +63,10 @@ int main(int argc, char* argv[]) {
 
         string filename = entry.path().filename().string();
 
-        // Skip hidden files (like .time)
         if (filename[0] == '.') continue;
 
         string baseName = filename.substr(0, filename.find_last_of('.'));
 
-        // Get relative path from outDir to preserve folder structure
         string relPath = fs::relative(entry.path(), outDir).string();
         string relDir = fs::path(relPath).parent_path().string();
 
@@ -95,10 +87,8 @@ int main(int argc, char* argv[]) {
             int reference = readSingleInt(refFile);
             double accuracy = calculateAccuracy(predicted, reference);
 
-            // Determine class name from directory
             string className = relDir.empty() ? "default" : relDir;
 
-            // Update class stats
             classStats[className].totalTests++;
             classStats[className].totalAccuracy += accuracy;
             classStats[className].totalPredicted += predicted;
@@ -107,7 +97,6 @@ int main(int argc, char* argv[]) {
                 classStats[className].perfectMatches++;
             }
 
-            // Update overall stats
             overall.totalTests++;
             overall.totalAccuracy += accuracy;
             overall.totalPredicted += predicted;
@@ -137,7 +126,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Print per-class statistics
+    // per-class statistics
     cout << "[" << algorithm << "] (Time: " << execTime << ")\n";
     for (const auto& [className, stats] : classStats) {
         double avgAccuracy = stats.totalAccuracy / stats.totalTests;
@@ -148,7 +137,7 @@ int main(int argc, char* argv[]) {
         cout << "Excess: +" << (stats.totalPredicted - stats.totalReference) << "\n";
     }
 
-    // Print overall statistics
+    // overall statistics
     double avgAccuracy = overall.totalAccuracy / overall.totalTests;
     cout << "  TOTAL  : ";
     cout << "Tests: " << setw(3) << overall.totalTests << " | ";

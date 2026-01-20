@@ -35,7 +35,6 @@ int main() {
                 minNeighDegree = min(minNeighDegree, (int)adj[neighbor].size());
             }
 
-            // Tie-break: the node with a neighbor that has the lowest degree
             if (degree > maxDegree ||
                 (degree == maxDegree && minNeighDegree < bestMinNeighDegree)) {
                 maxDegree = degree;

@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Generate benchmark plots for Vertex Cover algorithms.
-Similar style to the Graph Coloring report figures.
-"""
-
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -11,13 +5,11 @@ import subprocess
 import time
 import random
 
-# Configuration
 MAX_N = 40
 RUNS_PER_N = 30
 DENSITY = 0.30
 
 def generate_random_graph(n, density):
-    """Generate a random graph with n nodes and given edge density."""
     edges = []
     for i in range(n):
         for j in range(i + 1, n):
@@ -26,25 +18,21 @@ def generate_random_graph(n, density):
     return n, edges
 
 def write_graph_to_file(n, edges, filename):
-    """Write graph to file in the expected format."""
     with open(filename, 'w') as f:
         f.write(f"{n} {len(edges)}\n")
         for u, v in edges:
             f.write(f"{u} {v}\n")
 
 def benchmark_algorithm(algo_name, max_n=MAX_N, runs=RUNS_PER_N):
-    """Benchmark an algorithm across different node counts."""
     results = {}
 
     for n in range(5, max_n + 1):
         times = []
 
         for _ in range(runs):
-            # Generate random graph
             _, edges = generate_random_graph(n, DENSITY)
             write_graph_to_file(n, edges, '/tmp/bench_test.in')
 
-            # Time the algorithm
             start = time.perf_counter()
             try:
                 result = subprocess.run(
@@ -66,12 +54,10 @@ def benchmark_algorithm(algo_name, max_n=MAX_N, runs=RUNS_PER_N):
             min_time = np.min(times)
             max_time = np.max(times)
 
-            # Calculate ops/s
             avg_ops = 1.0 / avg_time if avg_time > 0 else 0
             min_ops = 1.0 / max_time if max_time > 0 else 0
             max_ops = 1.0 / min_time if min_time > 0 else 0
 
-            # 99th percentile (approximate using mean + 2.33*std)
             p99_time = np.percentile(times, 99)
             p99_ops = 1.0 / p99_time if p99_time > 0 else 0
 
@@ -89,13 +75,11 @@ def benchmark_algorithm(algo_name, max_n=MAX_N, runs=RUNS_PER_N):
     return results
 
 def plot_algorithm(ax, results, title, color='blue'):
-    """Plot results for a single algorithm."""
     ns = sorted(results.keys())
     avg_ops = [results[n]['avg_ops'] for n in ns]
     min_ops = [results[n]['min_ops'] for n in ns]
     max_ops = [results[n]['max_ops'] for n in ns]
 
-    # Plot with error bars (showing range)
     ax.errorbar(ns, avg_ops,
                 yerr=[np.array(avg_ops) - np.array(min_ops),
                       np.array(max_ops) - np.array(avg_ops)],
@@ -110,13 +94,11 @@ def plot_algorithm(ax, results, title, color='blue'):
     ax.set_xlim(0, max(ns) + 5)
 
 def main():
-    # Change to project directory
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     print("Benchmarking Vertex Cover algorithms...")
     print("="*50)
 
-    # Benchmark each algorithm
     print("\n[1/3] Benchmarking greedy-highest-order...")
     results_gho = benchmark_algorithm('greedy-highest-order', max_n=50)
 
@@ -129,10 +111,8 @@ def main():
     print("\n" + "="*50)
     print("Generating plots...")
 
-    # Create figure with vertical subplots (4 rows, 1 column)
     fig, axes = plt.subplots(4, 1, figsize=(10, 16))
 
-    # Plot each algorithm
     plot_algorithm(axes[0], results_gho,
                    'Fig. 1: Greedy cu BFS, n vs ops/s', 'blue')
 
@@ -143,7 +123,6 @@ def main():
         plot_algorithm(axes[2], results_bf,
                        'Fig. 3: Brute-Force, n vs ops/s', 'red')
 
-    # Comparison plot
     ax = axes[3]
     ns_gho = sorted(results_gho.keys())
     ns_gre = sorted(results_gre.keys())
@@ -170,7 +149,6 @@ def main():
     print("Saved: benchmark-graphs/benchmark_plots.png")
     print("Saved: benchmark-graphs/benchmark_plots.pdf")
 
-    # Also create individual plots for the report
     for name, results, title, color in [
         ('greedy-highest-order', results_gho, 'Greedy cu BFS, n vs ops/s', 'blue'),
         ('greedy-remove-edges', results_gre, 'Greedy cu grad maxim, n vs ops/s', 'green'),

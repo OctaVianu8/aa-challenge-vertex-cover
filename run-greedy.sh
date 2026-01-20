@@ -13,7 +13,6 @@ if [ ! -f "./$ALGORITHM" ]; then
     exit 1
 fi
 
-# Measure total execution time
 start_time=$(date +%s.%N)
 
 find ./in -type f | while read -r input_file; do

@@ -50,14 +50,6 @@ int main() {
     }
 
 	cout << minCoverSize << '\n';
-    // cout << "Minimum vertex cover size: " << minCoverSize << "\n";
-    // cout << "Vertices in cover: ";
-    // for (int i = 0; i < n; i++) {
-    //     if (minCoverMask & (1 << i)) {
-    //         cout << i << " ";
-    //     }
-    // }
-    // cout << "\n";
 
     return 0;
 }

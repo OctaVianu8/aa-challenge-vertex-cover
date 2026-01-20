@@ -2,9 +2,6 @@ CXX = g++
 CXXFLAGS = -O2
 CXXFLAGS_17 = -std=c++17 -O2
 
-# Default algorithm
-ALGORITHM ?= greedy-highest-order
-
 COUNT ?= 10
 
 EXECUTABLES = brute-force greedy-highest-order greedy-remove-edges test-gen-random test-gen-cycle-with-cords test-gen-bipartite calculate-accuracy
