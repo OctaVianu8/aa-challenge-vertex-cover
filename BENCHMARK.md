@@ -5,32 +5,32 @@ Masoara performanta prelucrarii fisierelor pentru ambii algoritmi greedy.
 ## Compilare
 
 ```bash
-make calculate-benchmark
+make calculate-google-benchmark
 ```
 
 ## Rulare
 
 ```bash
-./calculate-benchmark
+./calculate-google-benchmark
 ```
 
 ## Optiuni
 
 ```bash
 # Doar greedy-highest-order
-./calculate-benchmark --benchmark_filter=GreedyHighestOrder
+./calculate-google-benchmark --benchmark_filter=GreedyHighestOrder
 
 # Doar greedy-remove-edges
-./calculate-benchmark --benchmark_filter=GreedyRemoveEdges
+./calculate-google-benchmark --benchmark_filter=GreedyRemoveEdges
 
 # 10 repetari
-./calculate-benchmark --benchmark_repetitions=10
+./calculate-google-benchmark --benchmark_repetitions=10
 
 # Export JSON
-./calculate-benchmark --benchmark_format=json > results.json
+./calculate-google-benchmark --benchmark_format=json > results.json
 
 # Toate optiunile
-./calculate-benchmark --help
+./calculate-google-benchmark --help
 ```
 
 ## Setup Google Benchmark

@@ -32,7 +32,7 @@ test-gen-bipartite: test-gen-bipartite.cpp
 calculate-accuracy: calculate-accuracy.cpp
 	$(CXX) $(CXXFLAGS_17) -o $@ $<
 
-calculate-benchmark: calculate-benchmark.cpp
+calculate-google-benchmark: calculate-google-benchmark.cpp
 	$(CXX) $(CXXFLAGS_17) -DUSE_BENCHMARK -I./benchmark/include -L./benchmark/build/src -o $@ $< -lbenchmark_main -lbenchmark -lpthread -ldl -lm
 
 generate-tests: test-gen-random
